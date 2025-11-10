@@ -17,25 +17,25 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.lab_week_09.ui.theme.LAB_WEEK_09Theme
+import com.example.lab_week_09.ui.theme.OnBackgroundItemText
+import com.example.lab_week_09.ui.theme.OnBackgroundTitleText
+import com.example.lab_week_09.ui.theme.PrimaryTextButton
 
 // Declare a data class called Student
 data class Student(
     var name: String
 )
 
-// Previously we extend AppCompatActivity,
-// now we extend ComponentActivity
+// MainActivity extends ComponentActivity
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LAB_WEEK_09Theme {
-                // and set it as the color of the surface
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // We call the Home composable
                     Home()
                 }
             }
@@ -43,12 +43,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Here, instead of defining it in an XML file,
-// we create a composable function called Home
 @Composable
 fun Home() {
-    // Here, we create a mutable state list of Student
-    // We use remember to make the list remember its value
+    // Remember list of students
     val listData = remember {
         mutableStateListOf(
             Student("Tanu"),
@@ -57,10 +54,9 @@ fun Home() {
         )
     }
 
-    // Here, we create a mutable state of Student
+    // Remember input field
     var inputField = remember { mutableStateOf(Student("")) }
 
-    // We call the HomeContent composable
     HomeContent(
         listData,
         inputField.value,
@@ -74,8 +70,6 @@ fun Home() {
     )
 }
 
-// Here, we create a composable function called HomeContent
-// HomeContent is used to display the content of the Home composable
 @Composable
 fun HomeContent(
     listData: SnapshotStateList<Student>,
@@ -83,9 +77,7 @@ fun HomeContent(
     onInputValueChange: (String) -> Unit,
     onButtonClick: () -> Unit
 ) {
-    // Here, we use LazyColumn to display a list of items lazily
     LazyColumn {
-        // Input area
         item {
             Column(
                 modifier = Modifier
@@ -93,25 +85,30 @@ fun HomeContent(
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
+                // Title
+                OnBackgroundTitleText(
                     text = stringResource(id = R.string.enter_item)
                 )
+
+                // Input field
                 TextField(
                     value = inputField.name,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text
                     ),
-                    onValueChange = { onInputValueChange(it) }
+                    onValueChange = { onInputValueChange(it) },
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
-                Button(onClick = { onButtonClick() }) {
-                    Text(
-                        text = stringResource(id = R.string.button_click)
-                    )
-                }
+
+                // Primary Button
+                PrimaryTextButton(
+                    text = stringResource(id = R.string.button_click),
+                    onClick = onButtonClick
+                )
             }
         }
 
-        // List items
+        // List of Students
         items(listData) { item ->
             Column(
                 modifier = Modifier
@@ -119,7 +116,7 @@ fun HomeContent(
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = item.name)
+                OnBackgroundItemText(text = item.name)
             }
         }
     }
@@ -128,5 +125,7 @@ fun HomeContent(
 @Preview(showBackground = true)
 @Composable
 fun PreviewHome() {
-    Home()
+    LAB_WEEK_09Theme {
+        Home()
+    }
 }
